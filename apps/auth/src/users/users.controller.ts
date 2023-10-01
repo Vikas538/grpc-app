@@ -8,11 +8,13 @@ import {
   FindOneUserDto,
   PaginationDto,
 } from '@app/common';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import {GrpcStreamMethod } from '@nestjs/microservices';
+import { MyService, RequestMessage, ResponseMessage } from '@app/common/types/proto/hello';
 
 @Controller()
 @UsersServiceControllerMethods()
-export class UsersController implements UsersServiceController {
+export class UsersController implements UsersServiceController, MyService {
   constructor(private readonly usersService: UsersService) {}
 
   createUser(createUserDto: CreateUserDto) {
@@ -37,5 +39,24 @@ export class UsersController implements UsersServiceController {
 
   queryUsers(paginationDtoStream: Observable<PaginationDto>) {
     return this.usersService.queryUsers(paginationDtoStream);
+  }
+
+  @GrpcStreamMethod('MyService', 'sendStream')
+  sendStream(request: Observable<RequestMessage>): Observable<ResponseMessage> {
+    const rsponse$ = new Subject<ResponseMessage>();
+
+    const onNext = (requestdata: RequestMessage) => {
+      const { data } = requestdata;
+      console.log('ReceivedData', data); //do your thing
+      rsponse$.next({ responseData: `${data}` });
+    };
+    const onComplete = () => rsponse$.complete();
+
+    request.subscribe({
+      next: onNext,
+      complete: onComplete,
+    });
+
+    return rsponse$.asObservable();
   }
 }

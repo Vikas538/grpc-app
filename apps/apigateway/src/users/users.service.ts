@@ -8,17 +8,20 @@ import {
 } from '@app/common';
 import { AUTH_SERVICE } from './constants';
 import { ClientGrpc } from '@nestjs/microservices';
-import { ReplaySubject } from 'rxjs';
+import {ReplaySubject } from 'rxjs';
+import {  MyService, RequestMessage, ResponseMessage } from '@app/common/types/proto/hello';
 
 @Injectable()
 export class UsersService implements OnModuleInit {
   private usersService: UsersServiceClient;
+  private gspService:MyService
 
-  constructor(@Inject(AUTH_SERVICE) private client: ClientGrpc) {}
+  constructor(@Inject(AUTH_SERVICE) private client: ClientGrpc ) {}
 
   onModuleInit() {
     this.usersService =
       this.client.getService<UsersServiceClient>(USERS_SERVICE_NAME);
+      this.gspService=this.client.getService<MyService>('MyService');
   }
 
   create(createUserDto: CreateUserDto) {
@@ -57,5 +60,18 @@ export class UsersService implements OnModuleInit {
       console.log('Chunk', chunkNumber, users);
       chunkNumber += 1;
     });
+  }
+
+  sendStream(data: string) {
+    try {
+      const helloRequest$ = new ReplaySubject<RequestMessage>();
+      helloRequest$.next({ data: `Hello (${data})!` });
+      helloRequest$.complete();
+      this.gspService.sendStream(helloRequest$).subscribe((res) => {
+        console.log(res);
+      })
+    } catch (err) {
+      console.log(err);
+    }
   }
 }

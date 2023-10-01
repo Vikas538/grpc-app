@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package auth;
+
+message RequestMessage {
+  string data = 1;
+}
+
+service MyService {
+  rpc sendStream(stream RequestMessage) returns (stream ResponseMessage);
+}
+
+message ResponseMessage {
+  string response_data = 1;
+}

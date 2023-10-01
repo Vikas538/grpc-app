@@ -43,4 +43,14 @@ export class UsersController {
   emailUsers() {
     return this.usersService.emailUsers();
   }
+
+  @Post('startStreaming')
+  sendMessage() {
+    let i=0
+    while (i < 10) {
+      console.log(i);
+      this.usersService.sendStream(i.toString())
+      i++
+    }
+  }
 }
