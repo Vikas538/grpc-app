@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  auth:
+    build: 
+      context: ./
+      dockerfile: Dockerfile.auth
+    container_name: auth
+    ports:
+      - "3001:3001"  
+    networks:
+      - grpc-network
+
+  apigateway:
+    build: 
+      context: ./
+      dockerfile: Dockerfile.apigateway
+    container_name: nestApiGateway
+    ports:
+      - "3000:3000"  
+    networks:
+      - grpc-network
+    depends_on:
+      - auth
+
+networks:
+  grpc-network:

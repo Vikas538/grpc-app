@@ -18,7 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/apigateway/test/jest-e2e.json",
-    "start:apiGateway": "pnpm run start:dev apigateway"
+    "start:apigateway": "pnpm run start apigateway"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.8.21",

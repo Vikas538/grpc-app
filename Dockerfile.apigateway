@@ -3,10 +3,7 @@ FROM node:18
 WORKDIR /usr/src/apps
 COPY package*.json ./
 RUN npm i -g pnpm
-
 RUN pnpm install
 COPY . .
-RUN  apt-get update && apt-get install -y protobuf-compiler
-CMD [ "pnpm", "run","start:apiGateway", ]
-EXPOSE 3000
+CMD [ "pnpm","run","start:apigateway" ]
 
